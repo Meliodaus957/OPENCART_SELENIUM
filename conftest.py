@@ -8,8 +8,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 
-YANDEX_BROWSER_PATH = "/Applications/Opera\ Opera.app"  # Укажите реальный путь к бинарному файлу Yandex
-OPERA_BROWSER_PATH = "/Applications/Yandex\ Yandex.app"  # Укажите реальный путь к бинарному файлу Opera
+YANDEX_BROWSER_PATH = "/Applications/Opera\ Opera.app"
+OPERA_BROWSER_PATH = "/Applications/Yandex\ Yandex.app"
 
 
 def pytest_addoption(parser):
@@ -44,12 +44,10 @@ def _initialize_browser(browser_choice):
         firefox_options = FirefoxOptions()
         return webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=firefox_options)
     elif browser_choice == "opera":
-        # Использование ChromeDriver с указанием пути к бинарнику Opera
         chrome_options = ChromeOptions()
         chrome_options.binary_location = OPERA_BROWSER_PATH
         return webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
     elif browser_choice == "yandex":
-        # Использование ChromeDriver с указанием пути к бинарнику Yandex
         chrome_options = ChromeOptions()
         chrome_options.binary_location = YANDEX_BROWSER_PATH
         return webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
