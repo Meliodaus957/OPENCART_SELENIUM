@@ -39,17 +39,17 @@ def _initialize_browser(browser_choice):
     """Инициализация веб-драйвера на основе выбора браузера."""
     if browser_choice == "chrome":
         chrome_options = ChromeOptions()
-        return webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+        return chrome_options
     elif browser_choice == "firefox":
         firefox_options = FirefoxOptions()
-        return webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=firefox_options)
+        return firefox_options
     elif browser_choice == "opera":
         chrome_options = ChromeOptions()
         chrome_options.binary_location = OPERA_BROWSER_PATH
-        return webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+        return chrome_options
     elif browser_choice == "yandex":
         chrome_options = ChromeOptions()
         chrome_options.binary_location = YANDEX_BROWSER_PATH
-        return webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+        return chrome_options
     else:
         raise ValueError(f"Unsupported browser: {browser_choice}")

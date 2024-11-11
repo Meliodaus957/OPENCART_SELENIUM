@@ -1,74 +1,58 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from locators import *
+import pytest
+import allure
+from logger import setup_logger
+from pages.admin_login_page import AdminLoginPage
+from pages.admin_product_page import AdminProductPage
+from pages.registration_page import RegistrationPage
+
+logger = setup_logger()
 
 
-# Таймаут для ожиданий
-DEFAULT_TIMEOUT = 10
+@pytest.fixture
+def admin_login(browser):
+    return AdminLoginPage(browser)
 
 
-# Функция для ожидания элементов
-def wait_for_element(browser, css_selector, timeout=DEFAULT_TIMEOUT):
-    """Ожидание появления элемента по CSS селектору."""
-    return WebDriverWait(browser, timeout).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, css_selector))
-    )
-
-# Тесты
-def test_homepage_elements(browser):
-    """Проверка наличия ключевых элементов на главной странице."""
-    wait_for_element(browser, LOGO_SELECTOR)
-    wait_for_element(browser, SEARCH_SELECTOR)
-    wait_for_element(browser, PRODUCT_THUMB_SELECTOR)
-    wait_for_element(browser, "a[title='Shopping Cart']")
-    wait_for_element(browser, "a[title='Checkout']")
+@pytest.fixture
+def admin_product(browser):
+    return AdminProductPage(browser)
 
 
-def test_catalog_elements(browser):
-    """Проверка элементов страницы каталога."""
-    browser.get(f"{browser.current_url}/index.php?route=product/category&path=20")
-    wait_for_element(browser, "#content")
-    wait_for_element(browser, PRODUCT_THUMB_SELECTOR)
-    wait_for_element(browser, ".input-group")
-    wait_for_element(browser, "select[name='category_id']")
-    wait_for_element(browser, ".btn-primary")
+@pytest.fixture
+def registration(browser):
+    return RegistrationPage(browser)
 
 
-def test_product_page_elements(browser):
-    """Проверка элементов страницы товара."""
-    browser.get(f"{browser.current_url}/index.php?route=product/product&path=57&product_id=49")
-    wait_for_element(browser, BUTTON_CART_SELECTOR)
-    wait_for_element(browser, ".thumbnails")
-    wait_for_element(browser, PRICE_SELECTOR)
-    wait_for_element(browser, "a[href='#tab-review']")
-    wait_for_element(browser, "a[href='#tab-review']")
+@allure.feature("Admin Panel")
+@allure.story("Add New Product")
+def test_add_new_product(admin_login, admin_product):
+    logger.info("Открытие страницы логина администратора")
+    with allure.step("Open admin login page and login"):
+        admin_login.open("/admin")
+        admin_login.login("test", "test")
+    with allure.step("Add a new product"):
+        admin_product.add_product("Test Product", "Meta Test")
+        logger.info("Добавлен новый продукт 'Test Product'")
 
 
-def test_admin_login_logout(browser):
-    """Тест логина и разлогина в админку."""
-    browser.get(f"{browser.current_url}/admin")
-    username = wait_for_element(browser, ADMIN_USERNAME_SELECTOR)
-    password = browser.find_element(By.CSS_SELECTOR, ADMIN_PASSWORD_SELECTOR)
-    login_button = browser.find_element(By.CSS_SELECTOR, ADMIN_LOGIN_BUTTON_SELECTOR)
-
-    username.send_keys("demo")
-    password.send_keys("demo")
-    login_button.click()
-
-    wait_for_element(browser, ADMIN_LOGOUT_LINK_SELECTOR)
-    browser.find_element(By.CSS_SELECTOR, ADMIN_LOGOUT_LINK_SELECTOR).click()
-    wait_for_element(browser, ADMIN_USERNAME_SELECTOR)
+@allure.feature("Admin Panel")
+@allure.story("Delete Product")
+def test_delete_product(admin_login, admin_product):
+    logger.info("Открытие страницы логина администратора для удаления продукта")
+    with allure.step("Open admin login page and login"):
+        admin_login.open("/admin")
+        admin_login.login("demo", "demo")
+    with allure.step("Delete an existing product"):
+        admin_product.delete_product()
+        logger.info("Продукт успешно удален")
 
 
-def test_registration_page_elements(browser):
-    """Проверка наличия ключевых элементов на странице регистрации."""
-    # Переход на страницу регистрации
-    browser.get(f"{browser.current_url}/index.php?route=account/register")
-
-    # Проверка наличия элементов
-    wait_for_element(browser, "#input-firstname")
-    wait_for_element(browser, "#input-lastname")
-    wait_for_element(browser, "#input-email")
-    wait_for_element(browser, "#input-password")
-    wait_for_element(browser, "input[name='agree']")
+@allure.feature("User Registration")
+@allure.story("Register New User")
+def test_registration_new_user(registration):
+    logger.info("Открытие страницы регистрации")
+    with allure.step("Open user registration page"):
+        registration.open("/index.php?route=account/register")
+    with allure.step("Register new user"):
+        registration.register_user("Pavel", "Gorodnev", "Pavel.Gorodnev@example.com", "password123")
+        logger.info("Регистрация нового пользователя: Pavel Gorodnev")
