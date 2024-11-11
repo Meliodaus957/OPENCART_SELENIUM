@@ -6,7 +6,9 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
-
+import pytest
+import allure
+from datetime import datetime
 
 YANDEX_BROWSER_PATH = "/Applications/Opera\ Opera.app"
 OPERA_BROWSER_PATH = "/Applications/Yandex\ Yandex.app"
@@ -53,3 +55,21 @@ def _initialize_browser(browser_choice):
         return chrome_options
     else:
         raise ValueError(f"Unsupported browser: {browser_choice}")
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    # Хук для проверки статуса каждого теста
+    outcome = yield
+    result = outcome.get_result()
+    setattr(item, "rep_" + result.when, result)
+
+@pytest.fixture(autouse=True)
+def screenshot_on_failure(request, browser):
+    yield
+    # Проверка, был ли тест неудачным
+    if request.node.rep_call.failed:
+        timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        screenshot_name = f"screenshot_{timestamp}.png"
+        browser.save_screenshot(screenshot_name)
+        allure.attach.file(screenshot_name, name="Ошибка - скриншот", attachment_type=allure.attachment_type.PNG)
