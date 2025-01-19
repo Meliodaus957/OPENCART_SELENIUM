@@ -1,4 +1,3 @@
-
 from tests.locators import AdminLoginPageLocators as Locators
 from tests.pages.base_page import BasePage
 
