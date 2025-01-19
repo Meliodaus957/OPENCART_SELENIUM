@@ -4,7 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class BasePage:
-    def __init__(self, browser, base_url="http://localhost"):
+    def __init__(self, browser, base_url="192.168.0.112:8081"):
         self.browser = browser
         self.base_url = base_url
         self.logger = logging.getLogger(self.__class__.__name__)
