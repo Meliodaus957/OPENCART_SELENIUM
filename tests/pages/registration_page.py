@@ -1,5 +1,6 @@
-from base_page import BasePage
+
 from tests.locators import RegistrationPageLocators as Locators
+from tests.pages.base_page import BasePage
 
 
 class RegistrationPage(BasePage):
@@ -12,3 +13,12 @@ class RegistrationPage(BasePage):
         self.click(Locators.AGREE_CHECKBOX)
         self.click(Locators.CONTINUE_BUTTON)
 
+
+    def is_registration_successful(self):
+        """Проверка успешной регистрации."""
+        try:
+            # Проверка наличия сообщения об успешной регистрации
+            success_message = self.wait_for_element(".alert-success")
+            return "Your Account Has Been Created!" in success_message.text
+        except NoSuchElementException:
+            return False  # Сообщение не найдено, значит регистрация не прошла
