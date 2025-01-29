@@ -1,5 +1,5 @@
-from base_page import BasePage
 from tests.locators import AdminLoginPageLocators as Locators
+from tests.pages.base_page import BasePage
 
 
 class AdminLoginPage(BasePage):
