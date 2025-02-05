@@ -1,46 +1,57 @@
 import pytest
 import allure
-from tests.pages.admin_login_page import AdminLoginPage
-from tests.pages.admin_product_page import AdminProductPage
-from tests.pages.registration_page import RegistrationPage
+from conftest import browser
+from pages.product_page import ProductPage
+from pages.registration_page import RegistrationPage
+from tests.pages.currency_page import CurrencyPage
+from tests.pages.login_page import AdminLoginPage
 
 
-@pytest.fixture
-def admin_login(browser):
+@pytest.fixture()
+def login_page(browser):
     return AdminLoginPage(browser)
 
-
-@pytest.fixture
-def admin_product(browser):
-    return AdminProductPage(browser)
-
-
-@pytest.fixture
-def registration(browser):
+@pytest.fixture()
+def registration_page(browser):
     return RegistrationPage(browser)
+
+@pytest.fixture()
+def currency_page(browser):
+    return CurrencyPage(browser)
+
+@pytest.fixture()
+def product_page(browser):
+    return ProductPage(browser)
+
 
 
 @allure.feature("Администрирование")
 @allure.story("Добавление товара")
-def test_add_new_product(browser, admin_login, admin_product):
-        admin_login.open("/admin")
-        admin_login.login("user", "bitnami")
-        admin_product.add_product("Test Product", "Meta Test")
-        assert admin_product.is_product_added("Test Product"), "Продукт не был добавлен в список!"
+def test_add_new_product(login_page, product_page):
+        login_page.open("/administration")
+        login_page.login("user", "bitnami")
+        product_page.add_product("iphone15promaxxcx", "meta-tagdsdddd")
 
 
 @allure.feature("Администрирование")
 @allure.story("Удаление товара")
-def test_delete_product(browser, admin_login, admin_product):
-        admin_login.open("/admin")
-        admin_login.login("user", "bitnami")
-        admin_product.delete_product()
-        assert admin_product.is_product_deleted("Test Product"), "Продукт не был удален!"
+def test_delete_product(login_page, product_page):
+    login_page.open("/administration")
+    login_page.login("user", "bitnami")
+    product_page.delete_product()
 
 
-@allure.feature("Регистрация пользователя")
-@allure.story("Новый пользователь")
-def test_registration_new_user(browser, registration):
-        registration.open("/index.php?route=account/register")
-        registration.register_user("Pavel", "Gorodnev", "Pavel.Gorodnev@example.com", "password123")
-        assert registration.is_registration_successful(), "Регистрация не прошла успешно!"
+@allure.feature("Сайт")
+@allure.story("Регистрация пользователя")
+def test_register_new_user(registration_page):
+    registration_page.open("/en-gb?route=common/home")
+    registration_page.register_user('Johnа', 'Doeа', 'johnа.doe@example.com', '1234567890')
+
+
+@allure.feature("Сайт")
+@allure.story("Смена валюты")
+def test_change_currency(currency_page):
+    currency_page.open("/en-gb?route=common/home")
+    currency_page.switch_currency()
+    currency_page.is_currency_changed('$')
+
