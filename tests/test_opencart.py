@@ -27,7 +27,7 @@ def product_page(browser):
 
 @allure.feature("Администрирование")
 @allure.story("Добавление товара")
-def test_add_new_product(login_page, product_page):
+def test_add_new_product(login_page, product_page, pytest_runtest_makereport):
         login_page.open("/administration")
         login_page.login("user", "bitnami")
         product_page.add_product("iphone15promaxxcx", "meta-tagdsdddd")

@@ -1,5 +1,5 @@
 
-
+import allure
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -65,15 +65,21 @@ def browser(request):
     browser.quit()
 
 
-# def _initialize_browser(browser_choice):
-#     """Инициализация веб-драйвера на основе выбора браузера."""
-#     if browser_choice == "chrome":
-#         chrome_options = ChromeOptions()
-#         driver = webdriver.Chrome(service=ChromeService(), options=chrome_options)
-#         return driver
-#     elif browser_choice == "firefox":
-#         firefox_options = FirefoxOptions()
-#         driver = webdriver.Firefox(service=FirefoxService(), options=firefox_options)
-#         return driver
-#     else:
-#         raise ValueError(f"Unsupported browser: {browser_choice}")
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def runtest_makereport(item):
+    # Хук для проверки статуса каждого теста
+    outcome = yield
+    result = outcome.get_result()
+    setattr(item, "rep_" + result.when, result)
+
+
+
+@pytest.fixture(autouse=True)
+def screenshot_on_failure(request, browser):
+    yield
+    # Проверка, был ли тест неудачным
+    if request.node.rep_call.failed:
+        timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        screenshot_name = f"screenshot_{timestamp}.png"
+        browser.save_screenshot(screenshot_name)
+        allure.attach.file(screenshot_name, name="Ошибка - скриншот", attachment_type=allure.attachment_type.PNG)
