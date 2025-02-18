@@ -12,9 +12,9 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 def pytest_addoption(parser):
     """Добавление опций командной строки для pytest."""
     parser.addoption("--browser", action="store", default="chrome",
-                     help="Choose browser: chrome, firefox, opera, yandex")
+                     help="Choose browser: chrome, firefox")
     parser.addoption("--base_url", action="store", default="http://192.168.0.112:8081/", help="Base URL of the application")
-    parser.addoption("--executor", action="store", default="127.0.0.1")
+    parser.addoption("--executor", action="store", default="host.docker.internal")
     parser.addoption("--bv")
 
 @pytest.fixture()
@@ -65,21 +65,4 @@ def browser(request):
     browser.quit()
 
 
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def runtest_makereport(item):
-    # Хук для проверки статуса каждого теста
-    outcome = yield
-    result = outcome.get_result()
-    setattr(item, "rep_" + result.when, result)
 
-
-
-@pytest.fixture(autouse=True)
-def screenshot_on_failure(request, browser):
-    yield
-    # Проверка, был ли тест неудачным
-    if request.node.rep_call.failed:
-        timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        screenshot_name = f"screenshot_{timestamp}.png"
-        browser.save_screenshot(screenshot_name)
-        allure.attach.file(screenshot_name, name="Ошибка - скриншот", attachment_type=allure.attachment_type.PNG)
