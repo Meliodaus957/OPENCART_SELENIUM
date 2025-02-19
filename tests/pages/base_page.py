@@ -3,8 +3,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
+
 class BasePage:
-    def __init__(self, browser, base_url="http://192.168.0.112:8081"):
+    def __init__(self, browser, base_url="http://opencart:8080"):
         self.browser = browser
         self.base_url = base_url
         self.wait = WebDriverWait(self.browser, 15)

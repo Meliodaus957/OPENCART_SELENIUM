@@ -1,0 +1,55 @@
+services:
+  phpadmin:
+    image: 'phpmyadmin/phpmyadmin:latest'
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_PORT=3306
+      - PMA_USER=bn_opencart
+    ports:
+      - '8888:80'
+    networks:
+      - selenoid
+
+  mariadb:
+    image: docker.io/bitnami/mariadb:11.2
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=bn_opencart
+      - MARIADB_DATABASE=bitnami_opencart
+    ports:
+      - '3306:3306'
+    networks:
+      - selenoid
+
+  opencart:
+    image: bitnami/opencart:4.0.2-3-debian-12-r33
+    ports:
+      - '8081:8080'
+      - '443:8443'
+    environment:
+      - OPENCART_HOST=opencart:8080
+      - OPENCART_DATABASE_HOST=mariadb
+      - OPENCART_DATABASE_PORT_NUMBER=3306
+      - OPENCART_DATABASE_USER=bn_opencart
+      - OPENCART_DATABASE_NAME=bitnami_opencart
+      - ALLOW_EMPTY_PASSWORD=yes
+    depends_on:
+      - mariadb
+    networks:
+      - selenoid
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - opencart
+    networks:
+      - selenoid
+    environment:
+      OPENCART_URL: "http://opencart:8080"
+    command: ["opencart:8080","--", "pytest", "-v", "tests/test_opencart.py", "--base_url=http://opencart:8080/", "--browser=chrome", "--bv=latest", "--executor=selenoid"]
+
+networks:
+  selenoid:
+    external: true

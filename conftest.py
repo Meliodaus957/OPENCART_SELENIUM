@@ -17,14 +17,15 @@ def pytest_addoption(parser):
     parser.addoption("--executor", action="store", default="host.docker.internal")
     parser.addoption("--bv")
 
+
+
 @pytest.fixture()
 def browser(request):
     """Фикстура для инициализации веб-драйвера на основе аргументов."""
     browser = request.config.getoption("--browser")
-    base_url = request.config.getoption("--base_url")
     executor = request.config.getoption("--executor")
     version = request.config.getoption("--bv")
-
+    base_url = request.config.getoption("--base_url")
 
     executor_url = f"http://{executor}:4444/wd/hub"
 
