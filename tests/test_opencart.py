@@ -1,6 +1,6 @@
 import pytest
 import allure
-from conftest import browser
+from conftest import browser, base_url
 from pages.product_page import ProductPage
 from pages.registration_page import RegistrationPage
 from tests.pages.currency_page import CurrencyPage
@@ -8,20 +8,20 @@ from tests.pages.login_page import AdminLoginPage
 
 
 @pytest.fixture()
-def login_page(browser):
-    return AdminLoginPage(browser)
+def login_page(browser, base_url):
+    return AdminLoginPage(browser, base_url)
 
 @pytest.fixture()
-def registration_page(browser):
-    return RegistrationPage(browser)
+def registration_page(browser, base_url):
+    return RegistrationPage(browser, base_url)
 
 @pytest.fixture()
-def currency_page(browser):
-    return CurrencyPage(browser)
+def currency_page(browser, base_url):
+    return CurrencyPage(browser, base_url)
 
 @pytest.fixture()
-def product_page(browser):
-    return ProductPage(browser)
+def product_page(browser, base_url):
+    return ProductPage(browser, base_url)
 
 
 

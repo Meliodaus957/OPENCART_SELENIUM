@@ -5,7 +5,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 
 class BasePage:
-    def __init__(self, browser, base_url="http://opencart:8080"):
+    def __init__(self, browser, base_url):
         self.browser = browser
         self.base_url = base_url
         self.wait = WebDriverWait(self.browser, 15)
@@ -57,6 +57,7 @@ class BasePage:
         alert = WebDriverWait(self.browser, timeout=10).until(EC.alert_is_present())
         print(alert.text)
         alert.accept()
+
 
     def for_element_alert_dismiss(self):
         alert = WebDriverWait(self.browser, timeout=10).until(EC.alert_is_present())
