@@ -19,7 +19,8 @@ RUN python3 -m venv /app/venv
 
 # Обновляем pip внутри виртуального окружения и устанавливаем зависимости
 RUN /app/venv/bin/pip install --upgrade pip
-RUN /app/venv/bin/pip install -r requirements.txt
+RUN pip install --break-system-packages -r requirements.txt
+
 
 USER jenkins
 
