@@ -18,7 +18,8 @@ RUN chmod +x /app/wait-for-it.sh
 RUN python3 -m venv /app/venv
 
 # Обновляем pip внутри виртуального окружения и устанавливаем зависимости
-RUN /app/venv/bin/pip install --upgrade pip && /app/venv/bin/pip install -r requirements.txt
+RUN /app/venv/bin/pip install --upgrade pip
+RUN /app/venv/bin/pip install -r requirements.txt
 
 # Запускаем wait-for-it и pytest после того, как OpenCart будет доступен
 ENTRYPOINT ["/app/wait-for-it.sh"]
