@@ -8,6 +8,8 @@ pipeline {
         BROWSER = "chrome"
         BROWSER_VERSION = "latest"
         THREADS = "2"
+        SELENOID_IMAGE = 'selenoid/selenoid:latest'
+        NETWORK_NAME = 'selenoid'
     }
 
     stages {
@@ -47,6 +49,19 @@ pipeline {
                         sleep 5
                     done
                     echo "OpenCart is up and running!"
+                    '''
+                }
+            }
+        }
+
+        stage('Start Selenoid') {
+            steps {
+                script {
+                    // Запуск контейнера Selenoid в сети selenoid
+                    sh '''
+                        docker run -d --name selenoid --network $NETWORK_NAME \
+                        -p 4444:4444 \
+                        selenoid/selenoid:latest
                     '''
                 }
             }
