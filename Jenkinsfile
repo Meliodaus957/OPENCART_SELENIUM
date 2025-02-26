@@ -14,6 +14,20 @@ pipeline {
 
     stages {
 
+        stage('Install Docker') {
+            steps {
+                script {
+                    // Выполняем установку Docker на машине (если есть нужные права)
+                    sh '''
+                    apt-get update
+                    apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+                    curl -fsSL https://get.docker.com -o get-docker.sh
+                    sh get-docker.sh
+                    '''
+                }
+            }
+        }
+
         stage('Install Docker Compose') {
             steps {
                 script {
