@@ -2,11 +2,7 @@ pipeline {
     agent any
 
     environment {
-        OPENCART_URL = "http://opencart:8080"
-        SELENOID_URL = "http://selenoid:4444/wd/hub"
-        BROWSER = "chrome"
-        BROWSER_VERSION = "latest"
-        THREADS = "2"
+        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
     }
 
     stages {
@@ -16,15 +12,20 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
+        stage('Build Docker Images') {
             steps {
                 script {
-                    // Установка Python и pip
-                    sh 'apt-get update'
-                    sh 'apt-get install -y python3 python3-pip'
+                    // Строим Docker-образы через Docker Compose
+                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} build'
+                }
+            }
+        }
 
-                    // Установка зависимостей из requirements.txt
-                    sh 'pip install --break-system-packages -r requirements.txt'
+        stage('Start Services') {
+            steps {
+                script {
+                    // Поднимаем сервисы через Docker Compose
+                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} up -d'
                 }
             }
         }
@@ -32,20 +33,26 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Запускаем тесты с нужными параметрами
-                    sh 'pytest -n ${THREADS} --alluredir=allure-results --opencart_url ${OPENCART_URL} --browser ${BROWSER} --browser_version ${BROWSER_VERSION} --executor ${SELENOID_URL}'
+                    // Запуск тестов через Docker Compose, как указано в конфигурации
+                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} run --rm tests'
                 }
             }
         }
 
-        stage('Generate Allure Report') {
+        stage('Stop Services') {
             steps {
                 script {
-                    // Генерация отчета Allure
-                    sh 'allure generate allure-results --clean -o allure-report'
-                    sh 'allure open allure-report'
+                    // Останавливаем все сервисы после завершения тестов
+                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} down'
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            // Очистка после выполнения
+            cleanWs()
         }
     }
 }
