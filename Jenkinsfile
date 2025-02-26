@@ -37,6 +37,19 @@ pipeline {
             }
         }
 
+        stage('Start Selenoid') {
+            steps {
+                script {
+                    // Запуск контейнера Selenoid в сети selenoid
+                    sh '''
+                        docker run -d --name selenoid --network $NETWORK_NAME \
+                        -p 4444:4444 \
+                        selenoid/selenoid:latest
+                    '''
+                }
+            }
+        }
+
         stage('Start Services') {
             steps {
                 script {
@@ -49,19 +62,6 @@ pipeline {
                         sleep 5
                     done
                     echo "OpenCart is up and running!"
-                    '''
-                }
-            }
-        }
-
-        stage('Start Selenoid') {
-            steps {
-                script {
-                    // Запуск контейнера Selenoid в сети selenoid
-                    sh '''
-                        docker run -d --name selenoid --network $NETWORK_NAME \
-                        -p 4444:4444 \
-                        selenoid/selenoid:latest
                     '''
                 }
             }
