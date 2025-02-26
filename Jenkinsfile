@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Meliodaus957/OPENCART_SELENIUM'
+                git branch: 'main', url: 'https://github.com/Meliodaus957/OPENCART_SELENIUM'
             }
         }
 
