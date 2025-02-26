@@ -1,22 +1,22 @@
 from tests.pages.base_page import BasePage
+from tests.locators import CurrencyPageLocators as Locators
+from selenium.webdriver.common.by import By
 
 
 class CurrencyPage(BasePage):
-    CURRENCY_BUTTON = "button.btn.btn-link.dropdown-toggle"
 
 
-    def switch_currency(self, currency_code):
+    def switch_currency(self):
         self.logger.info(f"Смена валюты")
-        self.click(self.CURRENCY_BUTTON)
-        currency_option = self.browser.find_element(By.CSS_SELECTOR, f"button[name='{currency_code}']")
-        currency_option.click()
+        self.wait_for_element(Locators.CURRENCY_BUTTON)
+        self.click(Locators.CURRENCY_BUTTON)
+        self.wait_for_element(Locators.USD_CURRENCY)
+        self.click(Locators.USD_CURRENCY)
 
 
     def is_currency_changed(self, expected_currency_symbol):
         """Проверка изменения валюты на странице."""
-        try:
-            # Ожидаем, что на странице появится символ ожидаемой валюты
-            currency_element = self.wait_for_element(".currency-symbol")
+        currency_element = self.wait_for_element((By.CSS_SELECTOR, "#form-currency > div > a > strong"))
+        if currency_element:
             return expected_currency_symbol in currency_element.text
-        except NoSuchElementException:
-            return False  # Символ валюты не найден
+        return False  # Символ валюты не найден
