@@ -24,7 +24,7 @@ services:
   opencart:
     image: bitnami/opencart:4.0.2-3-debian-12-r33
     ports:
-      - '8081:8080'
+      - '8080:8080'
       - '443:8443'
     environment:
       - OPENCART_HOST=opencart:8080
