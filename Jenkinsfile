@@ -19,11 +19,13 @@ pipeline {
                         then
                             echo "Docker not found, installing..."
                             apt-get update
-                            apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-                            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-                            add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+                            apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+
+                            curl -fsSL https://download.docker.com/linux/debian/gpg | tee /etc/apt/trusted.gpg.d/docker.asc
+                            echo "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+
                             apt-get update
-                            apt-get install -y docker-ce
+                            apt-get install -y docker-ce docker-ce-cli containerd.io
                         else
                             echo "Docker already installed"
                         fi
@@ -58,9 +60,8 @@ pipeline {
         stage('Start Services') {
             steps {
                 script {
-                    // Запуск контейнеров с OpenCart и Selenoid
                     sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} up -d'
-                    // Ожидание готовности OpenCart
+
                     sh '''
                     echo "Waiting for OpenCart to be ready..."
                     until curl -s ${OPENCART_URL} > /dev/null; do
@@ -76,11 +77,8 @@ pipeline {
         stage('Install dependencies') {
             steps {
                 script {
-                    // Установка виртуального окружения
                     sh 'python3 -m venv venv'
                     sh '. venv/bin/activate'
-
-                    // Установка зависимостей
                     sh 'pip install --upgrade pip'
                     sh 'pip install -r requirements.txt'
                 }
@@ -90,7 +88,6 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Запуск тестов внутри виртуального окружения
                     sh '''
                     . venv/bin/activate
                     pytest -v tests/test_opencart.py --alluredir=allure-results \
@@ -114,7 +111,6 @@ pipeline {
     post {
         always {
             script {
-                // Остановка контейнеров после завершения тестов
                 sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} down'
             }
         }
