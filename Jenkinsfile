@@ -2,7 +2,11 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        OPENCART_URL = "http://opencart:8080"
+        SELENOID_URL = "selenoid"
+        BROWSER = "chrome"
+        BROWSER_VERSION = "latest"
+        THREADS = "2"
     }
 
     stages {
@@ -12,20 +16,15 @@ pipeline {
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Install dependencies') {
             steps {
                 script {
-                    // Строим Docker-образы через Docker Compose
-                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} build'
-                }
-            }
-        }
+                    // Установка Python и pip
+                    sh 'apt-get update'
+                    sh 'apt-get install -y python3 python3-pip'
 
-        stage('Start Services') {
-            steps {
-                script {
-                    // Поднимаем сервисы через Docker Compose
-                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} up -d'
+                    // Установка зависимостей из requirements.txt
+                    sh 'pip install --break-system-packages -r requirements.txt'
                 }
             }
         }
@@ -33,26 +32,20 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Запуск тестов через Docker Compose, как указано в конфигурации
-                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} run --rm tests'
+                    // Запускаем тесты с нужными параметрами
+                    sh 'pytest -v tests/test_opencart.py --alluredir=allure-results --base_url ${OPENCART_URL} --browser ${BROWSER} --bv ${BROWSER_VERSION} --executor ${SELENOID_URL}'
                 }
             }
         }
 
-        stage('Stop Services') {
+        stage('Generate Allure Report') {
             steps {
                 script {
-                    // Останавливаем все сервисы после завершения тестов
-                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} down'
+                    // Генерация отчета Allure
+                    sh 'allure generate allure-results --clean -o allure-report'
+                    sh 'allure open allure-report'
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            // Очистка после выполнения
-            cleanWs()
         }
     }
 }
