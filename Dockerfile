@@ -1,6 +1,5 @@
 FROM jenkins/jenkins:lts
 
-
 USER root
 
 # Устанавливаем зависимости
