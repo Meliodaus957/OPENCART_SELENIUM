@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
         OPENCART_URL = "http://opencart:8080"
-        SELENOID_URL = "selenoid:4444"
+        SELENOID_URL = "selenoid:4444/wd/hub"
         BROWSER = "chrome"
         BROWSER_VERSION = "latest"
         THREADS = "2"
@@ -44,7 +44,7 @@ pipeline {
                     sh '''
                         docker run -d --name selenoid --network $NETWORK_NAME \
                         -p 4444:4444 \
-                        selenoid/selenoid:latest
+                        aerokube/selenoid:latest
                     '''
                 }
             }
