@@ -48,7 +48,7 @@ services:
       - selenoid
     environment:
       OPENCART_URL: "http://opencart:8080"
-    command: ["opencart:8080","--", "/app/venv/bin/pytest", "-v", "tests/test_opencart.py", "--base_url=http://opencart:8080/", "--browser=chrome", "--bv=latest", "--executor=selenoid"]
+    command: ["opencart:8080","--", "pytest", "-v", "tests/test_opencart.py", "--base_url=http://opencart:8080/", "--browser=chrome", "--bv=latest", "--executor=selenoid"]
 
 
   jenkins:
