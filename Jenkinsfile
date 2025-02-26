@@ -7,11 +7,10 @@ pipeline {
         SELENOID_URL = "selenoid:4444"
         BROWSER = "chrome"
         BROWSER_VERSION = "latest"
+        THREADS = "2"
     }
 
-
     stages {
-
         stage('Install Docker') {
             steps {
                 script {
@@ -21,7 +20,7 @@ pipeline {
                             echo "Docker not found, installing..."
                             apt-get update
                             apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-                            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+                            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
                             add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
                             apt-get update
                             apt-get install -y docker-ce
@@ -33,20 +32,22 @@ pipeline {
             }
         }
 
-
         stage('Install Docker Compose') {
             steps {
                 script {
                     sh '''
-                        if ! command -v docker-compose &> /dev/null; then
+                        if ! command -v docker-compose &> /dev/null
+                        then
+                            echo "Docker Compose not found, installing..."
                             curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
                             chmod +x /usr/bin/docker-compose
+                        else
+                            echo "Docker Compose already installed"
                         fi
                     '''
                 }
             }
         }
-
 
         stage('Checkout') {
             steps {
@@ -54,14 +55,12 @@ pipeline {
             }
         }
 
-
         stage('Start Services') {
             steps {
                 script {
                     // Запуск контейнеров с OpenCart и Selenoid
                     sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} up -d'
-
-                    // Ожидание готовности OpenCart (пример с curl)
+                    // Ожидание готовности OpenCart
                     sh '''
                     echo "Waiting for OpenCart to be ready..."
                     until curl -s ${OPENCART_URL} > /dev/null; do
