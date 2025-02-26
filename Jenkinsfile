@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:latest'
-            args '--privileged'  // Для Docker-in-Docker
-        }
-    }
+    agent any
 
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
@@ -16,11 +11,28 @@ pipeline {
 
 
     stages {
-        stage('Checkout') {
+
+        stage('Install Docker') {
             steps {
-                git branch: 'main', url: 'https://github.com/Meliodaus957/OPENCART_SELENIUM'
+                script {
+                    sh '''
+                        if ! command -v docker &> /dev/null
+                        then
+                            echo "Docker not found, installing..."
+                            apt-get update
+                            apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+                            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+                            add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+                            apt-get update
+                            apt-get install -y docker-ce
+                        else
+                            echo "Docker already installed"
+                        fi
+                    '''
+                }
             }
         }
+
 
         stage('Install Docker Compose') {
             steps {
@@ -34,6 +46,14 @@ pipeline {
                 }
             }
         }
+
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Meliodaus957/OPENCART_SELENIUM'
+            }
+        }
+
 
         stage('Start Services') {
             steps {
