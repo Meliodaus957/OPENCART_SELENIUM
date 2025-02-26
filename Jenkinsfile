@@ -16,6 +16,19 @@ pipeline {
             }
         }
 
+        stage('Install dependencies') {
+            steps {
+                script {
+                    // Установка Python и pip
+                    sh 'apt-get update'
+                    sh 'apt-get install -y python3 python3-pip'
+
+                    // Установка зависимостей из requirements.txt
+                    sh 'pip install -r requirements.txt'
+                }
+            }
+        }
+
         stage('Run Tests') {
             steps {
                 script {
