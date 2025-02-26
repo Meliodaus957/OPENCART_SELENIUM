@@ -50,22 +50,6 @@ services:
       OPENCART_URL: "http://opencart:8080"
     command: ["opencart:8080","--", "pytest", "-v", "tests/test_opencart.py", "--base_url=http://opencart:8080/", "--browser=chrome", "--bv=latest", "--executor=selenoid"]
 
-  jenkins:
-    image: jenkins/jenkins:lts
-    restart: always
-    user: root
-    ports:
-      - "8084:8080"
-      - "50001:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
-
-volumes:
-  jenkins_home:
-
 networks:
   selenoid:
     external: true
