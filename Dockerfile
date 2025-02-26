@@ -1,5 +1,15 @@
 FROM ubuntu:20.04
 
+
+# Устанавливаем зависимости
+RUN apt-get update && apt-get install -y \
+    default-jre \
+    wget \
+    vim \
+    jq \
+    python3-venv \
+    python3-pip
+
 # Создаем рабочую папку и копируем файлы
 WORKDIR /app
 COPY requirements.txt /app
