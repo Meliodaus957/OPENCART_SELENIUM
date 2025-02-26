@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:latest'
+            args '--privileged'  // Для Docker-in-Docker
+        }
+    }
 
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
@@ -7,7 +12,6 @@ pipeline {
         SELENOID_URL = "selenoid:4444"
         BROWSER = "chrome"
         BROWSER_VERSION = "latest"
-        THREADS = "2"
     }
 
 
