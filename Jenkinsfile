@@ -14,38 +14,6 @@ pipeline {
 
     stages {
 
-        stage('Install Docker') {
-            steps {
-                script {
-                    // Выполняем установку Docker на машине (если есть нужные права)
-                    sh '''
-                    apt-get update
-                    apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-                    curl -fsSL https://get.docker.com -o get-docker.sh
-                    sh get-docker.sh
-                    '''
-                }
-            }
-        }
-
-        stage('Install Docker Compose') {
-            steps {
-                script {
-                    sh '''
-                        if ! command -v docker-compose &> /dev/null
-                        then
-                            echo "Docker Compose not found, installing..."
-                            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-                            sudo chmod +x /usr/local/bin/docker-compose
-
-                        else
-                            echo "Docker Compose already installed"
-                        fi
-                    '''
-                }
-            }
-        }
-
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Meliodaus957/OPENCART_SELENIUM'
