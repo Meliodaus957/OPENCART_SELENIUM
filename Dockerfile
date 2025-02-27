@@ -19,12 +19,11 @@ COPY . /app
 COPY wait-for-it.sh /app/wait-for-it.sh
 RUN chmod +x /app/wait-for-it.sh
 
-# Создаем виртуальное окружение и устанавливаем зависимости
-RUN python3 -m venv /app/venv
+
 
 # Обновляем pip внутри виртуального окружения и устанавливаем зависимости
-RUN /app/venv/bin/pip install --upgrade pip
-RUN /app/venv/bin/pip install -r requirements.txt
+RUN pip install --upgrade pip --break-system-packages
+RUN pip install -r requirements.txt --break-system-packages
 
 
 USER jenkins
