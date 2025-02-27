@@ -42,12 +42,23 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
+        stage('Setup Python Environment') {
             steps {
                 script {
-                    sh 'pip install --upgrade pip --break-system-packages'
-                    sh 'pip install --break-system-packages -r requirements.txt'
-                    sh 'pip install --break-system-packages pytest'
+                    // Устанавливаем python3-venv и pip в контейнере
+                    sh 'apt-get update'
+                    sh 'apt-get install -y python3-pip python3-venv'
+
+                    // Создаем виртуальное окружение
+                    sh 'python3 -m venv venv'
+
+                    // Активируем виртуальное окружение и устанавливаем зависимости из requirements.txt
+                    sh '. venv/bin/activate && pip install --upgrade pip'
+                    sh '. venv/bin/activate && pip install -r requirements.txt'
+
+                    // Проверяем, где находится pytest
+                    sh '. venv/bin/activate && which pytest'
+                    sh '. venv/bin/activate && pytest --version'
                 }
             }
         }
