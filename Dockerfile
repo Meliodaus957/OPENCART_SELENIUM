@@ -16,10 +16,11 @@ RUN chmod +x /app/wait-for-it.sh
 
 # Создаем виртуальное окружение и устанавливаем зависимости
 RUN python3 -m venv venv
+RUN source venv/bin/activate
 
 # Обновляем pip внутри виртуального окружения и устанавливаем зависимости
-RUN /app/venv/bin/pip install --upgrade pip
-RUN pip install --break-system-packages -r requirements.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install --break-system-packages -r requirements.txt
 
 
 USER jenkins
