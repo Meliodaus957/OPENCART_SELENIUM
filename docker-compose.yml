@@ -1,4 +1,3 @@
-
 services:
   phpadmin:
     image: 'phpmyadmin/phpmyadmin:latest'
@@ -28,7 +27,7 @@ services:
       - '8081:8080'
       - '443:8443'
     environment:
-      - OPENCART_HOST=opencart:8080
+      - OPENCART_HOST=localhost:8081
       - OPENCART_DATABASE_HOST=mariadb
       - OPENCART_DATABASE_PORT_NUMBER=3306
       - OPENCART_DATABASE_USER=bn_opencart
@@ -49,25 +48,7 @@ services:
       - selenoid
     environment:
       OPENCART_URL: "http://opencart:8080"
-    command: ["opencart:8080","--", "pytest", "-v", "tests/test_opencart.py", "--base_url=http://opencart:8080/", "--browser=chrome", "--bv=latest", "--executor=selenoid"]
-
-
-  jenkins:
-    image: jenkins/jenkins:lts
-    restart: always
-    user: root
-    ports:
-      - "8082:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
-
-volumes:
-  jenkins_home:
-
+    command: ["opencart", "8080", "--", "pytest", "-v", "tests/test_opencart.py", "--base_url=http://opencart:8080", "--browser=chrome", "--bv=latest", "--executor=selenoid"]
 
 networks:
   selenoid:

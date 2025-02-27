@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 # Создаем рабочую папку и копируем файлы
 WORKDIR /app
 COPY requirements.txt /app/
-RUN pip3 install --upgrade pip && pip3 install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Копируем код и скрипт ожидания
 COPY . /app
