@@ -45,8 +45,6 @@ pipeline {
         stage('Install dependencies') {
             steps {
                 script {
-                    sh 'python3 -m venv venv'
-                    sh '. venv/bin/activate'
                     sh 'pip install --upgrade pip --break-system-packages'
                     sh 'pip install --break-system-packages -r requirements.txt'
                     sh 'pip install --break-system-packages pytest'
