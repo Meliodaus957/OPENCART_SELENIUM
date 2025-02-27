@@ -15,7 +15,7 @@ COPY wait-for-it.sh /app/wait-for-it.sh
 RUN chmod +x /app/wait-for-it.sh
 
 # Создаем виртуальное окружение и устанавливаем зависимости
-RUN python3 -m venv /app/venv
+RUN python3 -m venv venv
 
 # Обновляем pip внутри виртуального окружения и устанавливаем зависимости
 RUN /app/venv/bin/pip install --upgrade pip
