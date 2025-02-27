@@ -47,7 +47,7 @@ pipeline {
                 script {
                     sh 'python3 -m venv venv'
                     sh '. venv/bin/activate'
-                    sh 'pip install --upgrade pip'
+                    sh 'pip install --upgrade pip --break-system-packages'
                     sh 'pip install --break-system-packages -r requirements.txt'
                 }
             }
