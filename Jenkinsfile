@@ -33,19 +33,11 @@ pipeline {
             }
         }
 
-        stage('Start Services') {
+        stage('Start Docker Compose') {
             steps {
                 script {
+                    // Поднимаем контейнеры с помощью docker-compose
                     sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} up -d'
-
-                    sh '''
-                    echo "Waiting for OpenCart to be ready..."
-                    until curl -s ${OPENCART_URL} > /dev/null; do
-                        echo "Waiting for OpenCart..."
-                        sleep 5
-                    done
-                    echo "OpenCart is up and running!"
-                    '''
                 }
             }
         }
