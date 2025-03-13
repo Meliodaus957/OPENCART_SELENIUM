@@ -57,7 +57,7 @@ pipeline {
             steps {
                 sh '''
                     . venv/bin/activate  # Снова активируем виртуальное окружение перед запуском тестов
-                    pytest --junit-xml=junit.xml tests
+                    pytest tests --junit-xml=junit.xml --alluredir=allure-results \
                     --executor=${EXECUTOR} \
                     --base_url=${BASE_URL} \
                     --browser=${BROWSER} \
