@@ -42,15 +42,17 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                    pytest tests --alluredir=allure-results \
-                    --executor=${EXECUTOR} \
-                    --base_url=${BASE_URL} \
-                    --browser=${BROWSER} \
-                    --bv=${BV} \
-                    --threads=${THREADS}
+                source venv/bin/activate  # Снова активируем виртуальное окружение перед запуском тестов
+                pytest tests --alluredir=allure-results \
+                --executor=${EXECUTOR} \
+                --base_url=${BASE_URL} \
+                --browser=${BROWSER} \
+                --bv=${BV} \
+                --threads=${THREADS}
                 '''
             }
         }
+
         stage('Generate Allure Report') {
             steps {
                 sh 'allure generate allure-results -o allure-report --clean'
