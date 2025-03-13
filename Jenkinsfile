@@ -1,5 +1,11 @@
 pipeline {
     agent any
+
+    environment {
+        ALLURE_VERSION = '2.32.2' // Укажи нужную версию Allure
+        ALLURE_HOME = '/opt/allure' // Путь установки Allure
+    }
+
     parameters {
         string(name: 'EXECUTOR', defaultValue: 'selenoid', description: 'Адрес Selenoid')
         string(name: 'BASE_URL', defaultValue: 'http://opencart:8080', description: 'Адрес OpenCart')
@@ -25,25 +31,31 @@ pipeline {
         }
 
 
-        stage('Install Homebrew and Allure') {
+        stage('Install Allure') {
             steps {
                 script {
-                    // Проверка, установлен ли Homebrew, если нет — установка
-                    sh '''
-                        if ! command -v brew &> /dev/null
-                        then
-                            echo "Homebrew not found. Installing..."
-                            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-                        else
-                            echo "Homebrew is already installed."
-                        fi
+                    // Проверка наличия Allure и установка, если не найден
+                    if (!fileExists("${env.ALLURE_HOME}/bin/allure")) {
+                        echo "Installing Allure..."
+                        sh """
+                            # Установим необходимые зависимости
+                            sudo apt-get update -y
+                            sudo apt-get install -y wget unzip
 
-                        # Установка Allure через Homebrew
-                        brew install allure
-                    '''
+                            # Скачиваем и устанавливаем Allure
+                            wget https://github.com/allure-framework/allure2/releases/download/${env.ALLURE_VERSION}/allure-${env.ALLURE_VERSION}.tgz
+                            tar -xvzf allure-${env.ALLURE_VERSION}.tgz
+                            sudo mv allure-${env.ALLURE_VERSION} ${env.ALLURE_HOME}
+                            echo 'export PATH=\$PATH:${env.ALLURE_HOME}/bin' >> ~/.bashrc
+                            source ~/.bashrc
+                        """
+                    } else {
+                        echo "Allure is already installed."
+                    }
                 }
             }
         }
+
 
         stage('Install Dependencies') {
             steps {
