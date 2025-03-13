@@ -15,6 +15,16 @@ pipeline {
                     credentialsId: 'b8598cbf-4b65-4202-a7f3-42b9d10afab2'
             }
         }
+
+        stage('Install Python') {
+            steps {
+                sh '''
+                    apt-get update && apt-get install -y python3 python3-pip
+                '''
+            }
+        }
+
+
         stage('Install Dependencies') {
             steps {
                 sh 'pip install -r requirements.txt'
