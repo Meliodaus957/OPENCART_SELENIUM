@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         ALLURE_VERSION = '2.32.2' // Укажи нужную версию Allure
-        ALLURE_HOME = '/opt/allure' // Путь установки Allure
+        ALLURE_HOME = '/opt/allure/bin/allure' // Путь установки Allure
     }
 
     parameters {
