@@ -47,7 +47,7 @@ pipeline {
                             tar -xvzf allure-${env.ALLURE_VERSION}.tgz
                             mv allure-${env.ALLURE_VERSION} ${env.ALLURE_HOME}
                             echo 'export PATH=\$PATH:${env.ALLURE_HOME}/bin' >> ~/.bashrc
-                            source ~/.bashrc
+                            . ~/.bashrc
                         """
                     } else {
                         echo "Allure is already installed."
