@@ -1,8 +1,8 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'EXECUTOR', defaultValue: 'host.docker.internal', description: 'Адрес Selenoid')
-        string(name: 'BASE_URL', defaultValue: 'http://192.168.0.112:8081/', description: 'Адрес OpenCart')
+        string(name: 'EXECUTOR', defaultValue: 'selenoid', description: 'Адрес Selenoid')
+        string(name: 'BASE_URL', defaultValue: 'http://opencart:8080', description: 'Адрес OpenCart')
         string(name: 'BROWSER', defaultValue: 'chrome', description: 'Браузер')
         string(name: 'BV', defaultValue: 'latest', description: 'Версия браузера')
     }
@@ -31,7 +31,6 @@ pipeline {
                     python3 -m venv venv
                     . venv/bin/activate  # Активируем виртуальное окружение
                     pip install -r requirements.txt
-                    pip install pytest  # Устанавливаем pytest в виртуальное окружение
                 '''
             }
         }
