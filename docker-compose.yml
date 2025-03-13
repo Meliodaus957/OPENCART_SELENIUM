@@ -41,14 +41,14 @@ services:
   tests:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  # Убедитесь, что в Dockerfile прописан wait-for-it.sh
     depends_on:
       - opencart
     networks:
       - selenoid
     environment:
       OPENCART_URL: "http://opencart:8080"
-    command: ["opencart", "8080", "--", "pytest", "-v", "tests/test_opencart.py", "--base_url=http://opencart:8080", "--browser=chrome", "--bv=latest", "--executor=selenoid"]
+    command: ["pytest", "-v", "tests/test_opencart.py", "--base_url=http://opencart:8080", "--browser=chrome", "--bv=latest", "--executor=selenoid"]
 
 networks:
   selenoid:
