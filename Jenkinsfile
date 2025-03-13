@@ -11,8 +11,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                url:'https://github.com/your_repo/opencart-tests.git',
-                credentialsId: 'b8598cbf-4b65-4202-a7f3-42b9d10afab2'
+                    url: 'https://github.com/your_repo/opencart-tests.git',
+                    credentialsId: 'b8598cbf-4b65-4202-a7f3-42b9d10afab2'
             }
         }
         stage('Install Dependencies') {
@@ -34,7 +34,13 @@ pipeline {
         }
         stage('Generate Allure Report') {
             steps {
-            sh 'allure generate allure-results -o allure-report --clean'
+                sh 'allure generate allure-results -o allure-report --clean'
+            }
+        }
+        stage('Publish Allure Report') {
+            steps {
+                allure includeProperties: false, reportBuildPolicy: 'ALWAYS', results: [[path: 'allure-results']]
+            }
         }
     }
 }
