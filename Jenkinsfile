@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        ALLURE_VERSION = '2.32.2' // Укажи нужную версию Allure
-        ALLURE_HOME = '/opt/allure/bin' // Путь установки Allure
-        PATH = "${env.PATH}:${env.ALLURE_HOME}" // Добавляем путь к Allure в переменную PATH
+        ALLURE_VERSION = '2.32.2'
+        ALLURE_HOME = '/opt/allure/bin'
+        PATH = "${env.PATH}:${env.ALLURE_HOME}"
     }
 
     parameters {
