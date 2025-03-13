@@ -1,73 +1,43 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
-        OPENCART_URL = "http://opencart:8080"
-        SELENOID_URL = "selenoid:4444/wd/hub"
-        BROWSER = "chrome"
-        BROWSER_VERSION = "latest"
-        THREADS = "2"
-        SELENOID_IMAGE = 'selenoid/selenoid:latest'
-        NETWORK_NAME = 'selenoid'
+    parameters {
+        string(name: 'EXECUTOR_URL', defaultValue: 'http://localhost:4444/wd/hub', description: 'Адрес Selenoid')
+        string(name: 'OPENCART_URL', defaultValue: 'http://localhost:8080', description: 'Адрес OpenCart')
+        string(name: 'BROWSER', defaultValue: 'chrome', description: 'Браузер')
+        string(name: 'BROWSER_VERSION', defaultValue: 'latest', description: 'Версия браузера')
+        string(name: 'THREADS', defaultValue: '2', description: 'Количество потоков')
     }
-
     stages {
-
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Meliodaus957/OPENCART_SELENIUM'
+                git branch: 'main', url: 'https://github.com/your_repo/opencart-tests.git'
             }
         }
-
-        stage('Start Selenoid') {
+        stage('Install Dependencies') {
             steps {
-                script {
-                    // Запуск контейнера Selenoid в сети selenoid
-                    sh '''
-                        docker run -d --name selenoid --network $NETWORK_NAME \
-                        -p 4444:4444 \
-                        aerokube/selenoid:latest
-                    '''
-                }
+                sh 'pip install -r requirements.txt'
             }
         }
-
-        stage('Start Docker Compose') {
-            steps {
-                script {
-                    // Поднимаем контейнеры с помощью docker-compose
-                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} up -d'
-                }
-            }
-        }
-
         stage('Run Tests') {
             steps {
-                script {
-                    sh '''
-                    python3 -m pytest -v tests/test_opencart.py --alluredir=allure-results \
-                        --base_url=${OPENCART_URL} --browser=${BROWSER} \
-                        --bv=${BROWSER_VERSION} --executor=${SELENOID_URL}
-                    '''
-                }
+                sh '''
+                    pytest tests --alluredir=allure-results \
+                    --executor-url=${EXECUTOR_URL} \
+                    --opencart-url=${OPENCART_URL} \
+                    --browser=${BROWSER} \
+                    --browser-version=${BROWSER_VERSION} \
+                    --threads=${THREADS}
+                '''
             }
         }
-
         stage('Generate Allure Report') {
             steps {
-                script {
-                    sh 'allure generate allure-results --clean -o allure-report'
-                    sh 'allure open allure-report'
-                }
+                sh 'allure generate allure-results -o allure-report --clean'
             }
         }
-    }
-
-    post {
-        always {
-            script {
-                sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} down'
+        stage('Publish Allure Report') {
+            steps {
+                allure includeProperties: false, reportBuildPolicy: 'ALWAYS', results: [[path: 'allure-results']]
             }
         }
     }
