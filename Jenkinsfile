@@ -91,16 +91,23 @@ pipeline {
             }
         }
 
-
         stage('Generate Allure Report') {
-            steps {
-                sh 'allure generate allure-results --clean -o allure-report'
-            }
+                steps {
+                    script {
+                        // Генерация отчета Allure, путь к результатам должен быть указан правильно
+                        sh 'allure generate allure-results --clean -o allure-report'
+                    }
+                }
         }
+
 
         stage('Publish Allure Report') {
             steps {
-                allure includeProperties: false, reportBuildPolicy: 'ALWAYS', results: [[path: 'allure-results']]
+                // Публикация отчета с использованием плагина Allure Jenkins
+                allure(
+                    results: [[path: 'allure-results']],
+                    report: 'allure-report'
+                )
             }
         }
     }
