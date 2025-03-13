@@ -18,4 +18,7 @@ COPY wait-for-it.sh /app/wait-for-it.sh
 RUN chmod +x /app/wait-for-it.sh
 
 # Запускаем wait-for-it и pytest после того, как OpenCart будет доступен
-ENTRYPOINT ["/app/wait-for-it.sh"]
+ENTRYPOINT ["/app/wait-for-it.sh", "opencart:8080", "--"]
+
+# Команда, которая будет выполнена после того, как wait-for-it.sh завершит ожидание
+CMD ["pytest", "-v", "tests/test_opencart.py", "--base_url=http://opencart:8080", "--browser=chrome", "--bv=latest", "--executor=selenoid"]
