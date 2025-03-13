@@ -35,6 +35,27 @@ pipeline {
             }
         }
 
+
+        stage('Set up environment') {
+            steps {
+                script {
+                    // Устанавливаем Docker Compose
+                    sh 'apt-get update'
+                    sh 'apt-get install -y docker-compose'
+                }
+            }
+        }
+
+         stage('Start Docker Compose') {
+            steps {
+                script {
+                    // Запуск docker-compose для поднятия нужных контейнеров
+                    sh 'docker-compose -f /Users/temirgaleevroman/PycharmProjects/OPENCART_SELENIUM/docker-compose.yml up -d'
+                }
+            }
+        }
+
+
         stage('Run Tests') {
             steps {
                 sh '''
@@ -48,6 +69,14 @@ pipeline {
             }
         }
 
+        stage('Stop Docker Compose') {
+            steps {
+                script {
+                    // Останавливаем контейнеры после тестов
+                    sh 'docker-compose -f /Users/temirgaleevroman/PycharmProjects/OPENCART_SELENIUM/docker-compose.yml down'
+                }
+            }
+        }
 
         stage('Generate Allure Report') {
             steps {
