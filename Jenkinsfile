@@ -37,3 +37,4 @@ pipeline {
             sh 'allure generate allure-results -o allure-report --clean'
         }
     }
+}
