@@ -19,7 +19,12 @@ pipeline {
         stage('Install Python') {
             steps {
                 sh '''
-                    apt-get update && apt-get install -y python3 python3-pip python3.11-venv allure
+                    apt-get update && apt-get install -y python3 python3-pip python3.11-venv curl unzip
+
+                    # Устанавливаем Allure
+                    curl -sSL https://github.com/allure-framework/allure2/releases/download/2.13.8/allure-2.13.8.zip -o allure.zip
+                    unzip allure.zip -d /opt
+                    ln -s /opt/allure-2.13.8/bin/allure /usr/local/bin/allure
                 '''
             }
         }
@@ -65,6 +70,7 @@ pipeline {
                 sh 'allure generate allure-results -o allure-report --clean'
             }
         }
+
         stage('Publish Allure Report') {
             steps {
                 allure includeProperties: false, reportBuildPolicy: 'ALWAYS', results: [[path: 'allure-results']]

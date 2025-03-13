@@ -61,12 +61,20 @@ def browser(request, base_url):
 
     browser.quit()
 
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item):
-    # Хук для проверки статуса каждого теста
+def pytest_runtest_makereport(item, call):
     outcome = yield
-    result = outcome.get_result()
-    setattr(item, "rep_" + result.when, result)
+    report = outcome.get_result()
+    if report.when == "call" and report.failed:
+        driver = item.funcargs.get("driver")  # Драйвер передается через фикстуру
+        if driver:
+            allure.attach(driver.get_screenshot_as_png(),
+                          name="screenshot",
+                          attachment_type=allure.attachment_type.PNG)
+            if call.excinfo:  # Если во время теста произошло исключение
+                allure.attach(str(call.excinfo), name="Exception Info", attachment_type=allure.attachment_type.TEXT)
+
 
 @pytest.fixture(autouse=True)
 def screenshot_on_failure(request, browser):
