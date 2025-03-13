@@ -5,7 +5,6 @@ pipeline {
         string(name: 'BASE_URL', defaultValue: 'http://192.168.0.112:8081/', description: 'Адрес OpenCart')
         string(name: 'BROWSER', defaultValue: 'chrome', description: 'Браузер')
         string(name: 'BV', defaultValue: 'latest', description: 'Версия браузера')
-        string(name: 'THREADS', defaultValue: '2', description: 'Количество потоков')
     }
 
     stages {
@@ -45,8 +44,7 @@ pipeline {
                     --executor=${EXECUTOR} \
                     --base_url=${BASE_URL} \
                     --browser=${BROWSER} \
-                    --bv=${BV} \
-                    --threads=${THREADS}
+                    --bv=${BV}
                 '''
             }
         }
