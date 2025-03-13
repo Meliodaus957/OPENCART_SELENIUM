@@ -32,4 +32,8 @@ pipeline {
                 '''
             }
         }
-        stage('Generate Allure Report
+        stage('Generate Allure Report') {
+            steps {
+            sh 'allure generate allure-results -o allure-report --clean'
+        }
+    }
