@@ -39,13 +39,13 @@ pipeline {
                         echo "Installing Allure..."
                         sh """
                             # Установим необходимые зависимости
-                            sudo apt-get update -y
-                            sudo apt-get install -y wget unzip
+                            apt-get update -y
+                            apt-get install -y wget unzip
 
                             # Скачиваем и устанавливаем Allure
                             wget https://github.com/allure-framework/allure2/releases/download/${env.ALLURE_VERSION}/allure-${env.ALLURE_VERSION}.tgz
                             tar -xvzf allure-${env.ALLURE_VERSION}.tgz
-                            sudo mv allure-${env.ALLURE_VERSION} ${env.ALLURE_HOME}
+                            mv allure-${env.ALLURE_VERSION} ${env.ALLURE_HOME}
                             echo 'export PATH=\$PATH:${env.ALLURE_HOME}/bin' >> ~/.bashrc
                             source ~/.bashrc
                         """
