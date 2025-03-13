@@ -25,15 +25,25 @@ pipeline {
         }
 
 
-        stage('Install Allure') {
+        stage('Install Homebrew and Allure') {
             steps {
                 script {
-                    // Установка Allure с использованием Homebrew
-                    sh 'brew install allure'
+                    // Проверка, установлен ли Homebrew, если нет — установка
+                    sh '''
+                        if ! command -v brew &> /dev/null
+                        then
+                            echo "Homebrew not found. Installing..."
+                            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                        else
+                            echo "Homebrew is already installed."
+                        fi
+
+                        # Установка Allure через Homebrew
+                        brew install allure
+                    '''
                 }
             }
         }
-
 
         stage('Install Dependencies') {
             steps {
