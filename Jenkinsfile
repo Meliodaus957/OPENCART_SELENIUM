@@ -31,32 +31,6 @@ pipeline {
         }
 
 
-        stage('Install Allure') {
-            steps {
-                script {
-                    // Проверка наличия Allure и установка, если не найден
-                    if (!fileExists("${env.ALLURE_HOME}/bin/allure")) {
-                        echo "Installing Allure..."
-                        sh """
-                            # Установим необходимые зависимости
-                            apt-get update -y
-                            apt-get install -y wget unzip
-
-                            # Скачиваем и устанавливаем Allure
-                            wget https://github.com/allure-framework/allure2/releases/download/${env.ALLURE_VERSION}/allure-${env.ALLURE_VERSION}.tgz
-                            tar -xvzf allure-${env.ALLURE_VERSION}.tgz
-                            mv allure-${env.ALLURE_VERSION} ${env.ALLURE_HOME}
-                            echo 'export PATH=\$PATH:${env.ALLURE_HOME}/bin' >> ~/.bashrc
-                            . ~/.bashrc
-                        """
-                    } else {
-                        echo "Allure is already installed."
-                    }
-                }
-            }
-        }
-
-
         stage('Install Dependencies') {
             steps {
                 sh '''
