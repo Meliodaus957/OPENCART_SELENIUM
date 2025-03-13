@@ -7,6 +7,7 @@ pipeline {
         string(name: 'BV', defaultValue: 'latest', description: 'Версия браузера')
         string(name: 'THREADS', defaultValue: '2', description: 'Количество потоков')
     }
+
     stages {
         stage('Checkout') {
             steps {
@@ -32,7 +33,7 @@ pipeline {
                 . venv/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
-            '''
+                '''
             }
         }
 
