@@ -29,29 +29,28 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                pip install pytest
+                    python3 -m venv venv
+                    . venv/bin/activate  # Активируем виртуальное окружение
+                    pip install -r requirements.txt
+                    pip install pytest  # Устанавливаем pytest в виртуальное окружение
                 '''
             }
         }
-
 
         stage('Run Tests') {
             steps {
                 sh '''
-                source venv/bin/activate  # Снова активируем виртуальное окружение перед запуском тестов
-                pytest tests --alluredir=allure-results \
-                --executor=${EXECUTOR} \
-                --base_url=${BASE_URL} \
-                --browser=${BROWSER} \
-                --bv=${BV} \
-                --threads=${THREADS}
+                    . venv/bin/activate  # Снова активируем виртуальное окружение перед запуском тестов
+                    pytest tests --alluredir=allure-results \
+                    --executor=${EXECUTOR} \
+                    --base_url=${BASE_URL} \
+                    --browser=${BROWSER} \
+                    --bv=${BV} \
+                    --threads=${THREADS}
                 '''
             }
         }
+
 
         stage('Generate Allure Report') {
             steps {
