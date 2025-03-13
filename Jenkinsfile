@@ -31,7 +31,6 @@ pipeline {
             }
         }
 
-
         stage('Install Dependencies') {
             steps {
                 sh '''
@@ -41,7 +40,6 @@ pipeline {
                 '''
             }
         }
-
 
         stage('Set up environment') {
             steps {
@@ -67,14 +65,13 @@ pipeline {
         }
 
         stage('Generate Allure Report') {
-                steps {
-                    script {
-                        // Генерация отчета Allure, путь к результатам должен быть указан правильно
-                        sh 'allure generate allure-results --clean -o allure-report'
-                    }
+            steps {
+                script {
+                    // Генерация отчета Allure, путь к результатам должен быть указан правильно
+                    sh 'allure generate allure-results --clean -o allure-report'
                 }
+            }
         }
-
 
         stage('Publish Allure Report') {
             steps {
@@ -84,6 +81,42 @@ pipeline {
                     report: 'allure-report'
                 )
             }
+        }
+    }
+
+    post {
+        always {
+            // Отправка junit отчета в Jenkins
+            junit '**/junit.xml'
+
+            // Генерация отчета Allure
+            script {
+                if (fileExists('allure-report')) {
+                    publishHTML(target: [
+                        reportName: 'Allure Report',
+                        reportDir: 'allure-report',
+                        reportFiles: 'index.html',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: false
+                    ])
+                }
+            }
+        }
+
+        success {
+            echo 'Pipeline succeeded!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
+        }
+
+        unstable {
+            echo 'Pipeline marked as unstable'
+        }
+
+        changed {
+            echo 'Pipeline status has changed'
         }
     }
 }
