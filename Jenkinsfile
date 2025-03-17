@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent anyf
 
     environment {
         ALLURE_VERSION = '2.32.2'
